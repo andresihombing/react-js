@@ -1,6 +1,6 @@
 import React from 'react';
-import logo from './logo.svg';
-import styles from './App.css';
+// import logo from './logo.svg';
+// import './App.css';
 import Resource from './component/network/resource'
 
 class App extends React.Component {
@@ -9,24 +9,28 @@ class App extends React.Component {
     this.state = { 
       confirmed : '',
       recovered : '',
-      deaths : ''
+      deaths : '',
+      lastUpdate : '',
+      search : ''
 
     }
   }
 
-  componentDidMount = async () => {
-    this.getData();              
+  componentDidMount = async () => {    
+    this.getData();                  
   }  
 
   getData = async () => {
     try{                    
         Resource.global()        
           .then((res) => {                                 
-            console.log(res.recovered) 
+            var lUpdate = res.lastUpdate
+            var date = new Date(lUpdate)            
             this.setState({
               confirmed : res.confirmed.value,
               recovered: res.recovered.value,
-              deaths : res.deaths.value
+              deaths : res.deaths.value,
+              lastUpdate: date.toLocaleString("en-US")
             })
           })
           .catch((err) => {                                                                                          
@@ -36,21 +40,48 @@ class App extends React.Component {
         console.log(error)
         console.log('AsyncStorage error: ' + error.message);
     }
+  }  
+  
+  
+  handleInputChange = () => {
+    this.setState({
+      search: this.search.value
+    })
   }
 
-  render(){
+  onSubmit = () => {
+    // this.props.history.push('/negara')
+    this.props.history.push({
+      pathname: '/negara',
+      search: `?=${this.state.search}`,
+      state: { detail: this.state.search }
+    })
+  }
+
+  render(){    
     return (
       <div className="App">      
         <header className="App-header">        
-          <div class = "container">
+          <div class = "container">            
             <form class = "example">        
-              <input type="text" placeholder="Pencarian Berdasarkan Negara . . ." />
-              <button type="submit"><i class="fa fa-search"></i></button>
+              <input
+                type = "text"
+                placeholder="Pencarian berdasarkan negara..."
+                ref={input => this.search = input}
+                onChange={this.handleInputChange}
+              />
+              <button 
+              type="submit"
+              onClick={this.onSubmit}
+              ><i class="fa fa-search"></i></button>
             </form>
             <div class = "row">
               {/* <div class = "col-md-6"> */}
               <div class = 'pull-left'>
                 <h2>Kasus Global</h2>
+              </div>
+              <div class = 'pull-right'>
+              <h5>Terakhir diupdate : {this.state.lastUpdate}</h5>
               </div>
               {/* </div> */}
             </div>          
@@ -82,8 +113,9 @@ class App extends React.Component {
           </div>
         </header>
       </div>
-    );
+    )
   }
 }
 
 export default App;
+
