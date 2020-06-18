@@ -39,7 +39,7 @@ const routing = (
         </li>
       </ul>
       <hr /> */}
-        <Route exact path="/covid-19" component={App} />
+        <Route exact path="/" component={App} />
         <Route exact path="/negara" component={Negara} />
         <Route path="/users" component={Users} />
     </div>
